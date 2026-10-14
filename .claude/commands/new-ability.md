@@ -1,0 +1,1 @@
+New ability "$ARGUMENTS": follow existing progression (flag ability.<id>), battery, part-transfer, and event conventions. Design in docs/CONTENT.md first, add pure-logic tests where appropriate, list MANUAL Editor steps. Follow AGENTS.md workflow.

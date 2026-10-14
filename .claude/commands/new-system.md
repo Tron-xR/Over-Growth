@@ -1,0 +1,1 @@
+New system "$ARGUMENTS": check existing specs in docs/SYSTEMS.md, propose the architecture and acceptance criteria, resolve any design conflicts, then implement only after approval. Follow AGENTS.md workflow sections 2-9; add the spec to docs/SYSTEMS.md and a roadmap entry.

@@ -1,0 +1,1 @@
+New part "$ARGUMENTS": follow docs/CONTENT.md Parts table and docs/SYSTEMS.md (Parts & slots). Add the data row, PartData asset spec, tests, documentation, and MANUAL Editor steps. Follow AGENTS.md workflow.

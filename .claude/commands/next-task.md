@@ -1,0 +1,1 @@
+Follow the Extended Agent Workflow in AGENTS.md (sections 1-9). Select the next unchecked non-[M] task in docs/ROADMAP.md, inspect its dependencies, state objective + acceptance criteria, then plan, implement, review the actual diff, verify, update docs/roadmap, and finish with the Completion Report. Do not expand scope.

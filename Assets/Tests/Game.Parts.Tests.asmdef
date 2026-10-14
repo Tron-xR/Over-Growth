@@ -1,0 +1,15 @@
+{
+  "name": "Game.Parts.Tests",
+  "rootNamespace": "Game.Parts.Tests",
+  "references": ["Game.Parts"],
+  "includePlatforms": ["Editor"],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": ["TestAssemblies"]
+}
