@@ -16,3 +16,5 @@
 *.apk
 *.unitypackage
 .DS_Store
+
+AGENTS.md
