@@ -17,7 +17,8 @@ namespace Game.Player
         float dashReadyAt;
         bool dashing;
 
-        public PartLoadout Loadout { get; private set; }
+        public PartInventory Inventory { get; private set; }
+        public PartLoadout Loadout => Inventory?.Loadout;
         public bool ControlEnabled { get; set; } = true;
 
         void Awake()
@@ -25,7 +26,7 @@ namespace Game.Player
             cc = GetComponent<CharacterController>();
             battery = GetComponent<Battery>();
             if (stats == null) { Debug.LogError("PlayerStats is required.", this); enabled = false; return; }
-            Loadout = new PartLoadout(stats.totalSlots);
+            Inventory = new PartInventory(stats.totalSlots);
             battery.Loadout = Loadout;
         }
 
@@ -44,10 +45,9 @@ namespace Game.Player
             if (dash != null && dash.action != null) dash.action.Disable();
         }
 
-        public void RestoreParts(IEnumerable<PartData> parts)
+        public void RestoreParts(IEnumerable<PartData> ownedParts, IEnumerable<PartData> equippedParts)
         {
-            Loadout.Clear();
-            foreach (var part in parts) Loadout.Equip(part);
+            Inventory.Restore(ownedParts, equippedParts);
         }
 
         void Update()

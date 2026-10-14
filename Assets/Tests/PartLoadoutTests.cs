@@ -1,4 +1,5 @@
 using Game.Parts;
+using Game.Core;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -58,6 +59,42 @@ namespace Game.Parts.Tests
             Assert.That(loadout.SpeedMultiplier, Is.EqualTo(1.8f).Within(0.001f));
             Assert.That(loadout.PowerDrainMultiplier, Is.EqualTo(1.2f).Within(0.001f));
             Assert.That(loadout.PushPullForce, Is.EqualTo(2.2f).Within(0.001f));
+        }
+
+        [Test]
+        public void InventoryRejectsUnownedPartsAndPersistsOwnedEquippedIds()
+        {
+            var inventory = new PartInventory(3);
+            part.id = "wheel_base";
+            var legs = CreatePart(3);
+            legs.id = "legs_g7";
+
+            Assert.That(inventory.Equip(part), Is.False);
+            Assert.That(inventory.Add(part), Is.True);
+            Assert.That(inventory.Add(part), Is.False);
+            Assert.That(inventory.Add(legs), Is.True);
+            Assert.That(inventory.Equip(part), Is.True);
+            Assert.That(inventory.Equip(legs), Is.False, "Over-budget parts must remain owned but unequipped.");
+
+            var saved = new SaveData { ownedParts = new[] { "wheel_base", "legs_g7" }, equippedParts = new[] { "wheel_base" } };
+            var restoredData = JsonUtility.FromJson<SaveData>(JsonUtility.ToJson(saved));
+            Assert.That(restoredData.ownedParts, Is.EqualTo(new[] { "wheel_base", "legs_g7" }));
+            Assert.That(restoredData.equippedParts, Is.EqualTo(new[] { "wheel_base" }));
+        }
+
+        [Test]
+        public void RestoreKeepsOnlyOwnedEquippedPartsWithinBudget()
+        {
+            var inventory = new PartInventory(3);
+            part.id = "wheel_base";
+            var legs = CreatePart(3);
+            legs.id = "legs_g7";
+
+            inventory.Restore(new[] { part, legs }, new[] { part, legs });
+
+            Assert.That(inventory.Owned.Count, Is.EqualTo(2));
+            Assert.That(inventory.Loadout.Equipped.Count, Is.EqualTo(1));
+            Assert.That(inventory.Loadout.Equipped[0], Is.SameAs(part));
         }
 
         PartData CreatePart(int slots)

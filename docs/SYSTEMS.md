@@ -4,13 +4,15 @@
 String-flag store. API: `Set(flag)`, `Has(flag)`, `OnFlagSet` event. `SaveCoordinator` persists flags as JSON through `SaveSystem`. Used for doors, abilities, senses, collectibles, logs, and progression.
 
 ## Player movement
-CharacterController on the ground plane. Walk/run/dash. `PlayerStats` in Assets/Data tunes walk/run/dash speeds, dash time/cooldown/cost, turn speed, and total slots. Final speed = base x `PartLoadout.SpeedMultiplier`. Input uses Move, Run, Dash, Interact, Ability, and Inventory actions. PlayerController owns action enable/disable; CoreTransfer reads the same shared Move action.
+CharacterController on the ground plane. Walk/run/dash. `PlayerStats` in Assets/Data tunes walk/run/dash speeds, dash time/cooldown/cost, turn speed, and total slots. Final speed = base x `PartLoadout.SpeedMultiplier`. Input uses Move, Run, Dash, Interact, Ability, and Inventory actions. PlayerController owns Move/Run/Dash action enable/disable; CoreTransfer reads the same shared Move action. InventoryUI owns the Inventory action enable/disable.
 
 ## Battery
 `Battery.Current/Max`. `BatteryConfig` in Assets/Data tunes capacity and idle/walk/run drain. Moving drain = base x `PartLoadout.PowerDrainMultiplier`; running applies the configured run multiplier. Dash spends its configured cost scaled by the part drain multiplier. Idle drain is minimal. `OnChanged` drives the battery HUD; `OnDepleted` fires once per depletion and starts RespawnManager. Chargers/cat/old man refill is future work.
 
 ## Parts & slots (customization)
 `PartData` ScriptableObject: id, displayName, category (Locomotion/Arm/Leg/Core/Misc), slotCost, speedMultiplier, pushPullForce, powerDrainMultiplier, prefab. `PartLoadout`: totalSlots, Equip/Unequip (rejects invalid, duplicate, or over-budget parts), and multiplicative stat aggregation. Empty loadout multipliers are 1. Base model = wheel; final upgrade = legs/arms rig (see concept art).
+
+`PartInventory` tracks owned parts separately from equipped parts and only equips owned parts. `PartPickup` adds the part and sets `part.owned.<id>` in GameState; the flag prevents the pickup from returning. `SaveCoordinator` saves owned and equipped part IDs and resolves them through its PartData catalog. Old saves without `ownedParts` treat their equipped parts as owned.
 
 ## Respawn
 `RespawnPoint` per area. RespawnManager tracks the active area ID (set through `SetCurrentArea`), fades through its assigned CanvasGroup, teleports to that area's point, refills battery, and fades back in. Old man in city is a special respawn with dialogue (not yet implemented).
@@ -36,7 +38,7 @@ Bottom-of-screen thought/dialogue text (typewriter), 2D sprite portraits for NPC
 Shiny items (optional, flagged); logs (text entries unlocking lore). Both stored as flags + data assets.
 
 ## Save
-Single-slot JSON at persistentDataPath: flags, equipped part IDs, battery, position, and area. `SaveCoordinator` restores these values and saves on flag/loadout/area changes, app pause, and application quit. Each saveable PartData must be listed in its catalog for ID resolution on load.
+Single-slot JSON at persistentDataPath: flags, owned and equipped part IDs, battery, position, and area. `SaveCoordinator` restores these values and saves on flag/inventory/area changes, app pause, and application quit. Each saveable PartData must be listed in its catalog for ID resolution on load.
 
 ## M1 greybox
 `Assets/Scenes/SampleScene.unity` contains the capsule player, floor, fixed-follow camera, room respawn point, battery HUD, and respawn fade overlay. Input actions live in `Assets/Data/Controls.inputactions`.

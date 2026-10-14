@@ -37,6 +37,17 @@ namespace Game.Parts
             OnChanged?.Invoke();
         }
 
+        internal void Restore(IEnumerable<PartData> parts)
+        {
+            equipped.Clear();
+            foreach (var part in parts)
+            {
+                if (!CanEquip(part)) continue;
+                equipped.Add(part);
+            }
+            OnChanged?.Invoke();
+        }
+
         // Multiplicative stacking; empty loadout = 1.
         public float SpeedMultiplier { get { float v = 1f; foreach (var p in equipped) v *= p.speedMultiplier; return v; } }
         public float PowerDrainMultiplier { get { float v = 1f; foreach (var p in equipped) v *= p.powerDrainMultiplier; return v; } }
