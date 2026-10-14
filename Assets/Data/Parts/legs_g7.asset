@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef7ae501a4d559643b30a5d434ed84ee, type: 3}
+  m_Name: legs_g7
+  m_EditorClassIdentifier: Game.Parts::Game.Parts.PartData
+  id: legs_g7
+  displayName: G7 Legs
+  category: 0
+  slotCost: 3
+  speedMultiplier: 1.4
+  pushPullForce: 1.2
+  powerDrainMultiplier: 1.6
+  visualPrefab: {fileID: 0}
+  description: High-speed scavenger upgrade.

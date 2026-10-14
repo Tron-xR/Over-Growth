@@ -4,16 +4,6 @@ using UnityEngine;
 
 namespace Game.Core
 {
-    [System.Serializable]
-    public class SaveData
-    {
-        public string[] flags;
-        public string[] equippedParts;
-        public float battery;
-        public string areaId;
-        public Vector3 position;
-    }
-
     public static class SaveSystem
     {
         static string Path => System.IO.Path.Combine(Application.persistentDataPath, "save.json");

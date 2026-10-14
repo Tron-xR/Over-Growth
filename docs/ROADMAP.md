@@ -25,6 +25,7 @@
 - [ ] PartData + PartLoadout (+EditMode tests)
 - [ ] Pickup + inventory UI (Parts tab, slot bar)
 - [ ] Wheel base vs legs stats changing movement/drain
+- [ ] [M] Open SampleScene, verify catalog/pickup/UI references, then verify pickup, inventory controls, slot bar, and equipped movement/drain in Play Mode
 
 ## M3 — Intro sequence + Preservation Room
 - [ ] Black screen, "power restored" VO, thought dialogue system

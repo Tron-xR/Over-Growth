@@ -24,7 +24,7 @@ namespace Game.Core
         {
             GameState.OnFlagSet -= SaveOnFlagSet;
             if (respawnManager != null) respawnManager.OnAreaChanged -= SaveOnAreaChanged;
-            if (player != null && player.Loadout != null) player.Loadout.OnChanged -= SaveOnLoadoutChanged;
+            if (player != null && player.Inventory != null) player.Inventory.OnChanged -= SaveOnLoadoutChanged;
         }
 
         void Start()
@@ -39,16 +39,9 @@ namespace Game.Core
             if (SaveSystem.TryLoad(out var data))
             {
                 GameState.Load(data.flags ?? System.Array.Empty<string>());
-                var restoredParts = new List<PartData>();
-                if (data.equippedParts != null)
-                    foreach (var id in data.equippedParts)
-                    {
-                        bool found = false;
-                        foreach (var part in partCatalog ?? System.Array.Empty<PartData>())
-                            if (part != null && part.id == id) { restoredParts.Add(part); found = true; break; }
-                        if (!found) Debug.LogWarning($"Saved part '{id}' is missing from the SaveCoordinator catalog.", this);
-                    }
-                player.RestoreParts(restoredParts);
+                var restoredOwned = ResolveParts(data.ownedParts ?? data.equippedParts);
+                var restoredEquipped = ResolveParts(data.equippedParts);
+                player.RestoreParts(restoredOwned, restoredEquipped);
                 bool restorePosition = string.IsNullOrEmpty(data.areaId) || respawnManager.SetCurrentArea(data.areaId);
                 if (!restorePosition) Debug.LogWarning($"Saved area '{data.areaId}' is not available; keeping the scene start position.", this);
                 if (restorePosition)
@@ -61,7 +54,7 @@ namespace Game.Core
                 battery.Restore(data.battery);
             }
 
-            player.Loadout.OnChanged += SaveOnLoadoutChanged;
+            player.Inventory.OnChanged += SaveOnLoadoutChanged;
             initialized = true;
         }
 
@@ -77,7 +70,8 @@ namespace Game.Core
             var data = new SaveData
             {
                 flags = GameState.Snapshot(),
-                equippedParts = GetEquippedIds(),
+                ownedParts = GetPartIds(player.Inventory.Owned),
+                equippedParts = GetPartIds(player.Loadout.Equipped),
                 battery = battery.Current,
                 areaId = respawnManager.CurrentAreaId,
                 position = player.transform.position
@@ -86,9 +80,21 @@ namespace Game.Core
             catch (System.Exception e) { Debug.LogError($"Could not save game progress: {e.Message}", this); }
         }
 
-        string[] GetEquippedIds()
+        List<PartData> ResolveParts(string[] ids)
         {
-            var parts = player.Loadout.Equipped;
+            var resolved = new List<PartData>();
+            foreach (var id in ids ?? System.Array.Empty<string>())
+            {
+                bool found = false;
+                foreach (var part in partCatalog ?? System.Array.Empty<PartData>())
+                    if (part != null && part.id == id) { resolved.Add(part); found = true; break; }
+                if (!found) Debug.LogWarning($"Saved part '{id}' is missing from the SaveCoordinator catalog.", this);
+            }
+            return resolved;
+        }
+
+        static string[] GetPartIds(IReadOnlyList<PartData> parts)
+        {
             var ids = new string[parts.Count];
             for (int i = 0; i < parts.Count; i++) ids[i] = parts[i].id;
             return ids;
