@@ -11,6 +11,7 @@ namespace Game.Senses
     {
         const string IntroDoneFlag = "intro.done";
         const string SightFlag = "sense.sight";
+        const string ControlLock = "sense.sight";
 
         [SerializeField] PlayerController player;
         [SerializeField] Volume volume;
@@ -25,7 +26,7 @@ namespace Game.Senses
 
         void Awake()
         {
-            if (player != null) player.ControlEnabled = false;
+            if (player != null) player.AddLock(ControlLock);
         }
 
         void OnEnable() => GameState.OnFlagSet += OnFlagSet;
@@ -47,13 +48,13 @@ namespace Game.Senses
 
             yield return null; // SaveCoordinator restores flags in Start.
             initialized = true;
-            player.ControlEnabled = false;
+            player.AddLock(ControlLock);
             if (!CacheProfile()) yield break;
 
             if (GameState.Has(SightFlag))
             {
                 SetSight(1f);
-                player.ControlEnabled = true;
+                player.RemoveLock(ControlLock);
             }
             else if (SightFadeState.CanBegin(GameState.Has(IntroDoneFlag), GameState.Has(SightFlag))) BeginFade();
         }
@@ -67,7 +68,7 @@ namespace Game.Senses
                 if (fade != null) StopCoroutine(fade);
                 fade = null;
                 SetSight(1f);
-                player.ControlEnabled = true;
+                player.RemoveLock(ControlLock);
             }
         }
 
@@ -111,7 +112,7 @@ namespace Game.Senses
             }
 
             GameState.Set(SightFlag);
-            player.ControlEnabled = true;
+            player.RemoveLock(ControlLock);
             fade = null;
         }
 

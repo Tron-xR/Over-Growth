@@ -8,6 +8,7 @@ namespace Game.Abilities
     /// Ability 1: move the core into a nearby robot for a short time.
     public class CoreTransfer : Ability
     {
+        const string ControlLock = "ability.core_transfer";
         [SerializeField] float range = 6f;
         [SerializeField] float duration = 15f;
         [SerializeField] InputActionReference move;
@@ -25,7 +26,7 @@ namespace Game.Abilities
                 .FirstOrDefault();
             if (target == null) return;
             IsActive = true;
-            player.ControlEnabled = false;
+            player.AddLock(ControlLock);
             endAt = Time.time + duration;
             // TODO: camera follow target, VFX
         }
@@ -34,7 +35,7 @@ namespace Game.Abilities
         {
             IsActive = false;
             target = null;
-            player.ControlEnabled = true;
+            player.RemoveLock(ControlLock);
         }
 
         void Update()

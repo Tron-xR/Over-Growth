@@ -1,6 +1,7 @@
 using System.Collections;
 using Game.Core;
 using Game.Dialogue;
+using Game.Player;
 using UnityEngine;
 
 namespace Game.UI
@@ -8,20 +9,23 @@ namespace Game.UI
     public class IntroSequence : MonoBehaviour
     {
         const string IntroDoneFlag = "intro.done";
+        const string ControlLock = "ui.intro_sequence";
 
         [SerializeField] CanvasGroup blackScreen;
+        [SerializeField] PlayerController player;
         [SerializeField] DialogueRunner dialogueRunner;
         [SerializeField] DialogueLine[] lines;
 
         void Start()
         {
-            if (blackScreen == null || dialogueRunner == null || !dialogueRunner.HasLineListener || !HasValidLines())
+            if (blackScreen == null || player == null || dialogueRunner == null || !dialogueRunner.HasLineListener || !HasValidLines())
             {
-                Debug.LogError("IntroSequence requires a black screen, four valid lines, DialogueRunner, and enabled DialogueBox listener.", this);
+                Debug.LogError("IntroSequence requires a black screen, PlayerController, four valid lines, DialogueRunner, and enabled DialogueBox listener.", this);
                 enabled = false;
                 return;
             }
 
+            player.AddLock(ControlLock);
             blackScreen.alpha = 1f;
             blackScreen.blocksRaycasts = true;
             StartCoroutine(BeginIntro());
@@ -43,6 +47,7 @@ namespace Game.UI
             {
                 blackScreen.alpha = 0f;
                 blackScreen.blocksRaycasts = false;
+                player.RemoveLock(ControlLock);
                 yield break;
             }
 
@@ -51,6 +56,7 @@ namespace Game.UI
             GameState.Set(IntroDoneFlag);
             blackScreen.alpha = 0f;
             blackScreen.blocksRaycasts = false;
+            player.RemoveLock(ControlLock);
         }
     }
 }

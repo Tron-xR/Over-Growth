@@ -8,6 +8,7 @@ namespace Game.World
 {
     public class RespawnManager : MonoBehaviour
     {
+        const string ControlLock = "world.respawn";
         [SerializeField] Battery battery;
         [SerializeField] PlayerController player;
         [SerializeField] CanvasGroup fade;
@@ -49,7 +50,7 @@ namespace Game.World
 
         IEnumerator Respawn()
         {
-            player.ControlEnabled = false;
+            player.AddLock(ControlLock);
             yield return FadeTo(1f);
             if (points.TryGetValue(CurrentAreaId ?? "", out var p))
             {
@@ -61,7 +62,7 @@ namespace Game.World
             else Debug.LogError($"No RespawnPoint registered for area '{CurrentAreaId}'.", this);
             battery.Refill();
             yield return FadeTo(0f);
-            player.ControlEnabled = true;
+            player.RemoveLock(ControlLock);
             respawnRoutine = null;
         }
 

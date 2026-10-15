@@ -11,6 +11,7 @@ namespace Game.UI
 {
     public class InventoryUI : MonoBehaviour
     {
+        const string ControlLock = "ui.inventory";
         [SerializeField] PlayerController player;
         [SerializeField] InputActionAsset controls;
 
@@ -20,7 +21,6 @@ namespace Game.UI
         Text slotsLabel;
         Image slotsFill;
         bool isOpen;
-        bool previousControlEnabled;
 
         void Awake()
         {
@@ -52,7 +52,7 @@ namespace Game.UI
                 inventoryAction.Disable();
             }
             if (player != null && player.Inventory != null) player.Inventory.OnChanged -= Refresh;
-            if (isOpen && player != null) player.ControlEnabled = previousControlEnabled;
+            if (isOpen && player != null) player.RemoveLock(ControlLock);
             isOpen = false;
         }
 
@@ -64,11 +64,10 @@ namespace Game.UI
             panel.SetActive(open);
             if (open)
             {
-                previousControlEnabled = player.ControlEnabled;
-                player.ControlEnabled = false;
+                player.AddLock(ControlLock);
                 Refresh();
             }
-            else player.ControlEnabled = previousControlEnabled;
+            else player.RemoveLock(ControlLock);
         }
 
         void BuildPanel()
