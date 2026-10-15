@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Game.Parts;
+using Game.Player.Logic;
 using System.Collections.Generic;
 
 namespace Game.Player
@@ -14,12 +15,16 @@ namespace Game.Player
 
         CharacterController cc;
         Battery battery;
+        readonly ControlLockSet controlLocks = new ControlLockSet();
         float dashReadyAt;
         bool dashing;
 
         public PartInventory Inventory { get; private set; }
         public PartLoadout Loadout => Inventory?.Loadout;
-        public bool ControlEnabled { get; set; } = true;
+        public bool ControlEnabled => !controlLocks.IsLocked;
+
+        public void AddLock(string reason) => controlLocks.Add(reason);
+        public void RemoveLock(string reason) => controlLocks.Remove(reason);
 
         void Awake()
         {
