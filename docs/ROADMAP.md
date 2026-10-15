@@ -33,7 +33,7 @@
 - [ ] Sight fade-in (SenseManager + EditMode tests)
 - [ ] [M] Add SenseManager to SampleScene, assign Player and Global Volume; verify intro fade, movement lock, and reload after sight is restored
 - [x] Room puzzle code: mobility device + access card pickups, Interactable/PuzzleGate, persistence, and EditMode tests
-- [ ] [M] Greybox the Preservation Room pickups and exit door in SampleScene; wire PlayerInteractor, Interactable, PuzzleGate, DialogueRunner, visuals, and blocker; verify both flags, locked thought, opening, and save/load persistence
+- [ ] [M] Playtest the wired Preservation Room in SampleScene: verify both pickups/flags, locked thought, gate opening, and save/load persistence (setup is complete; checklist in SYSTEMS.md)
 - [ ] Lab reveal (music drop, flicker lights)
 
 ## M4 — Gates, puzzles, logs

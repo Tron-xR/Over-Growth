@@ -2,7 +2,6 @@ using System.Collections;
 using Game.Dialogue;
 using UnityEngine;
 using Game.Core;
-using Game.Player;
 
 namespace Game.Puzzle
 {
@@ -13,10 +12,8 @@ namespace Game.Puzzle
         [SerializeField] string flagOnOpen = "door.room_exit";
         [SerializeField] GameObject closedVisual;
         [SerializeField] Collider blocker;
-        [SerializeField] PlayerController player;
         [SerializeField] DialogueRunner dialogueRunner;
 
-        const string ThoughtLock = "puzzle.room_exit.thought";
         const string LockedThoughtId = "thought.room_exit_need_items";
         const string LockedThought = "I need a way to move... and a way out";
         Coroutine thoughtRoutine;
@@ -47,9 +44,9 @@ namespace Game.Puzzle
             if (!PuzzleGateLogic.RequirementsMet(requiredFlags, GameState.Has))
             {
                 if (thoughtRoutine != null) return;
-                if (player == null || dialogueRunner == null || !dialogueRunner.HasLineListener)
+                if (dialogueRunner == null || !dialogueRunner.HasLineListener)
                 {
-                    Debug.LogError("PuzzleGate requires PlayerController and an active DialogueRunner listener to show its locked thought.", this);
+                    Debug.LogError("PuzzleGate requires an active DialogueRunner listener to show its locked thought.", this);
                     return;
                 }
 
@@ -63,7 +60,6 @@ namespace Game.Puzzle
 
         IEnumerator ShowLockedThought()
         {
-            player.AddLock(ThoughtLock);
             thoughtLine = ScriptableObject.CreateInstance<DialogueLine>();
             thoughtLine.id = LockedThoughtId;
             thoughtLine.text = LockedThought;
@@ -80,7 +76,6 @@ namespace Game.Puzzle
 
         void ClearThought()
         {
-            if (player != null) player.RemoveLock(ThoughtLock);
             if (thoughtLine != null) Destroy(thoughtLine);
             thoughtLine = null;
         }
