@@ -22,14 +22,16 @@
 - [ ] Model jar-brain + wheel base in Blender, import, replace capsule
 
 ## M2 — Parts & inventory
-- [ ] PartData + PartLoadout (+EditMode tests)
-- [ ] Pickup + inventory UI (Parts tab, slot bar)
+- [x] PartData + PartLoadout (+EditMode tests)
+- [x] Pickup + inventory UI (Parts tab, slot bar)
 - [ ] Wheel base vs legs stats changing movement/drain
 - [ ] [M] Open SampleScene, verify catalog/pickup/UI references, then verify pickup, inventory controls, slot bar, and equipped movement/drain in Play Mode
 
 ## M3 — Intro sequence + Preservation Room
-- [ ] Black screen, "power restored" VO, thought dialogue system
-- [ ] Sight fade-in (SenseManager)
+- [ ] Thought dialogue line data, event runner, one-time intro sequence, and EditMode tests (M3-A code; automated verification pending)
+- [ ] [M] Create four intro line assets and wire the black-screen overlay, DialogueBox, DialogueRunner, and IntroSequence in SampleScene (M3-A)
+- [ ] Sight fade-in (SenseManager + EditMode tests)
+- [ ] [M] Add SenseManager to SampleScene, assign Player and Global Volume; verify intro fade, movement lock, and reload after sight is restored
 - [ ] Room puzzle: mobility device + access card → door
 - [ ] Lab reveal (music drop, flicker lights)
 

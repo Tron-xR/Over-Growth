@@ -1,7 +1,7 @@
 {
   "name": "Game.Parts.Tests",
   "rootNamespace": "Game.Parts.Tests",
-  "references": ["Game.Parts", "Game.Core.Persistence"],
+  "references": ["Game.Parts", "Game.Core.Persistence", "Game.Dialogue", "Game.Senses.Logic"],
   "includePlatforms": ["Editor"],
   "excludePlatforms": [],
   "allowUnsafeCode": false,

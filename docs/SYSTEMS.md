@@ -26,13 +26,13 @@ CharacterController on the ground plane. Walk/run/dash. `PlayerStats` in Assets/
 `Interactable` (Interact prompt) + `PuzzleGate` (requires flags, sets flag, opens). Puzzle mechanics: push/pull blocks (force from parts), pressure plates, possessed-robot access, power routing. Gates never reference each other directly, only flags.
 
 ## Senses
-Flags `sense.sight`, `sense.hearing`, `sense.smell`. Sight: opening fade-in/blur then clear. Hearing: ambient/positional audio layer and audio-cue puzzles. Smell: reveals hidden/collectible hints (VFX trail). Presentation toggled by SenseManager.
+Flags `sense.sight`, `sense.hearing`, `sense.smell`. Sight: after `intro.done`, SenseManager fades the Global Volume from blurred, dark, and vignetted to its configured clear values, then sets `sense.sight`. Player control stays disabled until that flag is set. SaveCoordinator persists the flag, so a restored sight state skips the fade. The Volume needs Depth of Field, Vignette, and Color Adjustments. Hearing: ambient/positional audio layer and audio-cue puzzles. Smell: reveals hidden/collectible hints (VFX trail). Presentation toggled by SenseManager.
 
 ## Inventory UI
 Tabs: Parts (equip, slot bar), Collectibles, Quests, Map (unlocked areas), Logs.
 
 ## Dialogue
-Bottom-of-screen thought/dialogue text (typewriter), 2D sprite portraits for NPCs, simple JSON/ScriptableObject lines.
+`DialogueLine` ScriptableObjects hold a stable ID, text, and optional audio. `DialogueRunner` steps through lines and raises `OnLineRequested`; `DialogueBox` listens and presents each line with its typewriter effect. Intro lines play over a separate black-screen overlay; after the sequence finishes, `IntroSequence` sets `intro.done` in `GameState`. The existing `SaveCoordinator` persists the flag, so later loads skip the intro. The opening sequence uses one line for the optional “power restored” VO followed by three thought lines. MANUAL: author the four line assets and wire the separate overlay, runner, DialogueBox, and IntroSequence in SampleScene.
 
 ## Collectibles & logs
 Shiny items (optional, flagged); logs (text entries unlocking lore). Both stored as flags + data assets.
