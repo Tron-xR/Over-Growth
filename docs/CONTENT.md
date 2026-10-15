@@ -21,6 +21,12 @@
 | 3 | TBD | | |
 | 4 | TBD | | |
 
+## Interactable props
+| type | example | interaction | tuning |
+|---|---|---|---|
+| Carryable | canister / ball | E pick up and drop; F throw | `CarryConfig` |
+| Grab-and-move block | greybox cube | E grip; move to push/pull | `BlockConfig` |
+
 ## Logs
 | id | author | text | location |
 |---|---|---|---|

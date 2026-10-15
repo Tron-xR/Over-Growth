@@ -37,8 +37,9 @@
 - [ ] Lab reveal (music drop, flicker lights)
 
 ## M4 — Gates, puzzles, logs
-- [ ] Interactable + PuzzleGate (flags)
-- [ ] Push/pull block puzzle using part force
+- [x] Interactable + PuzzleGate (flags)
+- [x] Push/pull block and carryable item code (contact force scaling, safe pickup/drop/throw, reset) + EditMode logic tests
+- [ ] [M] Assign PushableConfig assets to SampleScene props and verify contact push, safe E toggle drop, blocked drops, weight slowdown, throw, and kill-plane reset; prefab checklist in SYSTEMS.md
 - [ ] Logs + Logs tab, collectibles + Collectibles tab
 
 ## M5 — Abilities

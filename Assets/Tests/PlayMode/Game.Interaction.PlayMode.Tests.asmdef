@@ -1,0 +1,15 @@
+{
+  "name": "Game.Interaction.PlayMode.Tests",
+  "rootNamespace": "Game.Interaction.PlayMode.Tests",
+  "references": ["Unity.InputSystem"],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false,
+  "optionalUnityReferences": ["TestAssemblies"]
+}
