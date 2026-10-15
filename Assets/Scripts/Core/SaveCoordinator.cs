@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Game.Parts;
 using Game.Player;
 using Game.World;
+using Game.World.Logic;
 using UnityEngine;
 
 namespace Game.Core
@@ -42,14 +43,16 @@ namespace Game.Core
                 var restoredOwned = ResolveParts(data.ownedParts ?? data.equippedParts);
                 var restoredEquipped = ResolveParts(data.equippedParts);
                 player.RestoreParts(restoredOwned, restoredEquipped);
-                bool restorePosition = string.IsNullOrEmpty(data.areaId) || respawnManager.SetCurrentArea(data.areaId);
-                if (!restorePosition) Debug.LogWarning($"Saved area '{data.areaId}' is not available; keeping the scene start position.", this);
-                if (restorePosition)
+                bool areaExists = respawnManager.SetCurrentArea(data.areaId);
+                if (!areaExists)
+                    Debug.LogWarning($"Saved area '{data.areaId}' is not available; restoring the current area's RespawnPoint.", this);
+
+                if (RespawnLogic.IsSavedPositionValid(data.position.x, data.position.y, data.position.z, respawnManager.KillY, areaExists))
+                    respawnManager.RestorePlayerPosition(data.position);
+                else
                 {
-                    var characterController = player.GetComponent<CharacterController>();
-                    characterController.enabled = false;
-                    player.transform.position = data.position;
-                    characterController.enabled = true;
+                    Debug.LogWarning("Saved player position is invalid, non-finite, or below killY; restoring a RespawnPoint.", this);
+                    respawnManager.TeleportToCurrentRespawnPoint();
                 }
                 battery.Restore(data.battery);
             }
@@ -67,6 +70,7 @@ namespace Game.Core
         void Save()
         {
             if (!initialized || !enabled) return;
+            respawnManager.TryGetSafePosition(out var safePosition);
             var data = new SaveData
             {
                 flags = GameState.Snapshot(),
@@ -74,7 +78,7 @@ namespace Game.Core
                 equippedParts = GetPartIds(player.Loadout.Equipped),
                 battery = battery.Current,
                 areaId = respawnManager.CurrentAreaId,
-                position = player.transform.position
+                position = safePosition
             };
             try { SaveSystem.Save(data); }
             catch (System.Exception e) { Debug.LogError($"Could not save game progress: {e.Message}", this); }

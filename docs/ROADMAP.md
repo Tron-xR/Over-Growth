@@ -32,7 +32,8 @@
 - [ ] [M] Create four intro line assets and wire the black-screen overlay, DialogueBox, DialogueRunner, and IntroSequence in SampleScene (M3-A)
 - [ ] Sight fade-in (SenseManager + EditMode tests)
 - [ ] [M] Add SenseManager to SampleScene, assign Player and Global Volume; verify intro fade, movement lock, and reload after sight is restored
-- [ ] Room puzzle: mobility device + access card → door
+- [x] Room puzzle code: mobility device + access card pickups, Interactable/PuzzleGate, persistence, and EditMode tests
+- [ ] [M] Greybox the Preservation Room pickups and exit door in SampleScene; wire PlayerInteractor, Interactable, PuzzleGate, DialogueRunner, visuals, and blocker; verify both flags, locked thought, opening, and save/load persistence
 - [ ] Lab reveal (music drop, flicker lights)
 
 ## M4 — Gates, puzzles, logs

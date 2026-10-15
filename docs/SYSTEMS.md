@@ -15,7 +15,7 @@ CharacterController on the ground plane. Walk/run/dash. `PlayerStats` in Assets/
 `PartInventory` tracks owned parts separately from equipped parts and only equips owned parts. `PartPickup` adds the part and sets `part.owned.<id>` in GameState; the flag prevents the pickup from returning. `SaveCoordinator` saves owned and equipped part IDs and resolves them through its PartData catalog. Old saves without `ownedParts` treat their equipped parts as owned.
 
 ## Respawn
-`RespawnPoint` per area. RespawnManager tracks the active area ID (set through `SetCurrentArea`), fades through its assigned CanvasGroup, teleports to that area's point, refills battery, and fades back in. Old man in city is a special respawn with dialogue (not yet implemented).
+`RespawnPoint` per area. `RespawnConfig` in Assets/Data sets `killY` (default -5, five units below the greybox floor at Y=0). RespawnManager tracks the active area ID (set through `SetCurrentArea`), triggers the existing fade, `world.respawn` control lock, and teleport sequence when the player falls below `killY`; this fall respawn does not change battery. Battery depletion uses the same sequence and refills battery. The player controller clears its vertical motion and any dash when teleported. A plain `SafePositionTracker` keeps the last grounded position above `killY` for saves. Load restores a saved position only when its coordinates are finite, its Y is at or above `killY`, and its area has a RespawnPoint; otherwise it logs a warning and uses the current area's RespawnPoint. An unavailable saved area also logs a warning and falls back to the scene's configured current area. Old man in city is a special respawn with dialogue (not yet implemented).
 
 ## Abilities (4)
 `Ability` base (id, unlock flag, Activate/Deactivate). `AbilityController` holds unlocked abilities, one active bind.
@@ -23,7 +23,7 @@ CharacterController on the ground plane. Walk/run/dash. `PlayerStats` in Assets/
 2-4. TBD (placeholders in CONTENT.md).
 
 ## Puzzles & gates
-`Interactable` (Interact prompt) + `PuzzleGate` (requires flags, sets flag, opens). Puzzle mechanics: push/pull blocks (force from parts), pressure plates, possessed-robot access, power routing. Gates never reference each other directly, only flags.
+`PlayerInteractor` listens to the existing `Player/Interact` action and invokes the closest in-range `Interactable`. `FlagPickup` sets its configured `GameState` flag and hides itself when that flag is restored. `PuzzleGate` checks requirements only when interacted with; the Preservation Room exit requires `item.mobility_device` and `item.access_card`, shows a thought through `DialogueRunner` when locked, and sets `door.room_exit` when opened. It restores the open visual and blocker from that saved flag after load. MANUAL: add the two trigger pickups and door to SampleScene, wire the player's Interact action and the door's Interactable event to PuzzleGate, and assign its player, DialogueRunner, visuals, and blocker. Puzzle mechanics: push/pull blocks (force from parts), pressure plates, possessed-robot access, power routing. Gates never reference each other directly, only flags.
 
 ## Senses
 Flags `sense.sight`, `sense.hearing`, `sense.smell`. Sight: after `intro.done`, SenseManager holds the `sense.sight` control lock while fading the Global Volume from blurred, dark, and vignetted to its configured clear values, then sets `sense.sight` and removes its lock. SaveCoordinator persists the flag, so a restored sight state skips the fade. The Volume needs Depth of Field, Vignette, and Color Adjustments. Hearing: ambient/positional audio layer and audio-cue puzzles. Smell: reveals hidden/collectible hints (VFX trail). Presentation toggled by SenseManager.
@@ -38,7 +38,7 @@ Tabs: Parts (equip, slot bar), Collectibles, Quests, Map (unlocked areas), Logs.
 Shiny items (optional, flagged); logs (text entries unlocking lore). Both stored as flags + data assets.
 
 ## Save
-Single-slot JSON at persistentDataPath: flags, owned and equipped part IDs, battery, position, and area. `SaveCoordinator` restores these values and saves on flag/inventory/area changes, app pause, and application quit. Each saveable PartData must be listed in its catalog for ID resolution on load.
+Single-slot JSON at persistentDataPath: flags, owned and equipped part IDs, battery, position, and area. `SaveCoordinator` restores these values and saves on flag/inventory/area changes, app pause, and application quit. Position saves use the last grounded location above `killY`, including while falling or respawning, so other progress still saves without preserving a bad location. Each saveable PartData must be listed in its catalog for ID resolution on load.
 
 ## M1 greybox
 `Assets/Scenes/SampleScene.unity` contains the capsule player, floor, fixed-follow camera, room respawn point, battery HUD, and respawn fade overlay. Input actions live in `Assets/Data/Controls.inputactions`.

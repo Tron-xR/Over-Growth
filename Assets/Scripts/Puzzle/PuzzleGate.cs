@@ -1,29 +1,96 @@
+using System.Collections;
+using Game.Dialogue;
 using UnityEngine;
 using Game.Core;
+using Game.Player;
 
 namespace Game.Puzzle
 {
-    /// Opens when all required flags are set. Optionally sets a flag when opened.
+    /// Opens on interaction when all required flags are set.
     public class PuzzleGate : MonoBehaviour
     {
-        [SerializeField] string[] requiredFlags;
-        [SerializeField] string flagOnOpen;
+        [SerializeField] string[] requiredFlags = { "item.mobility_device", "item.access_card" };
+        [SerializeField] string flagOnOpen = "door.room_exit";
         [SerializeField] GameObject closedVisual;
         [SerializeField] Collider blocker;
+        [SerializeField] PlayerController player;
+        [SerializeField] DialogueRunner dialogueRunner;
+
+        const string ThoughtLock = "puzzle.room_exit.thought";
+        const string LockedThoughtId = "thought.room_exit_need_items";
+        const string LockedThought = "I need a way to move... and a way out";
+        Coroutine thoughtRoutine;
+        DialogueLine thoughtLine;
         public bool IsOpen { get; private set; }
 
-        void OnEnable() { GameState.OnFlagSet += OnFlagSet; Evaluate(); }
-        void OnDisable() { GameState.OnFlagSet -= OnFlagSet; }
-
-        void OnFlagSet(string _) => Evaluate();
-
-        void Evaluate()
+        IEnumerator Start()
         {
-            if (IsOpen || !GameState.HasAll(requiredFlags)) return;
+            yield return null; // SaveCoordinator restores the saved door flag in Start.
+            if (!string.IsNullOrEmpty(flagOnOpen) && GameState.Has(flagOnOpen)) ApplyOpen();
+        }
+
+        void OnDisable()
+        {
+            if (thoughtRoutine != null) StopCoroutine(thoughtRoutine);
+            ClearThought();
+        }
+
+        public void Interact()
+        {
+            if (IsOpen) return;
+            if (string.IsNullOrWhiteSpace(flagOnOpen))
+            {
+                Debug.LogError("PuzzleGate requires a flag to persist its open state.", this);
+                return;
+            }
+
+            if (!PuzzleGateLogic.RequirementsMet(requiredFlags, GameState.Has))
+            {
+                if (thoughtRoutine != null) return;
+                if (player == null || dialogueRunner == null || !dialogueRunner.HasLineListener)
+                {
+                    Debug.LogError("PuzzleGate requires PlayerController and an active DialogueRunner listener to show its locked thought.", this);
+                    return;
+                }
+
+                thoughtRoutine = StartCoroutine(ShowLockedThought());
+                return;
+            }
+
+            ApplyOpen();
+            GameState.Set(flagOnOpen);
+        }
+
+        IEnumerator ShowLockedThought()
+        {
+            player.AddLock(ThoughtLock);
+            thoughtLine = ScriptableObject.CreateInstance<DialogueLine>();
+            thoughtLine.id = LockedThoughtId;
+            thoughtLine.text = LockedThought;
+            try
+            {
+                yield return dialogueRunner.Play(new DialogueSequence(new[] { thoughtLine }));
+            }
+            finally
+            {
+                ClearThought();
+                thoughtRoutine = null;
+            }
+        }
+
+        void ClearThought()
+        {
+            if (player != null) player.RemoveLock(ThoughtLock);
+            if (thoughtLine != null) Destroy(thoughtLine);
+            thoughtLine = null;
+        }
+
+        void ApplyOpen()
+        {
+            if (IsOpen) return;
             IsOpen = true;
             if (blocker) blocker.enabled = false;
             if (closedVisual) closedVisual.SetActive(false);
-            if (!string.IsNullOrEmpty(flagOnOpen)) GameState.Set(flagOnOpen);
         }
     }
 }
